@@ -24,6 +24,6 @@ Look at the `.png` in each folder to understand how the bot graph is structured 
 
 4. **Execute the program**
 
-```sh
-python bot_v3_with_memory_and_sql_generation/chatbot.py
-```
+    ```sh
+    python bot_v3_with_memory_and_sql_generation/chatbot.py
+    ```

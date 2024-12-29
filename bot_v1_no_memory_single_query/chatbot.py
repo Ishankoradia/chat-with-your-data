@@ -39,7 +39,7 @@ class ChatWithDatabaseBot:
     def generate_graph_png(self):
         image_bytes = self.graph.get_graph().draw_mermaid_png()
         image = Image.open(BytesIO(image_bytes))
-        image.save(os.path.dirname(os.path.abspath(__file__)) + "/v1.png")
+        image.save(os.path.dirname(os.path.abspath(__file__)) + "/graph_v1.png")
 
 
 if __name__ == "__main__":

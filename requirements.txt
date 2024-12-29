@@ -46,6 +46,7 @@ langchain-postgres==0.0.12
 langchain-text-splitters==0.3.4
 langgraph==0.2.60
 langgraph-checkpoint==2.0.9
+langgraph-checkpoint-postgres==2.0.9
 langgraph-sdk==0.1.48
 langsmith==0.2.6
 MarkupSafe==3.0.2

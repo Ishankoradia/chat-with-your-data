@@ -1,0 +1,1 @@
+Look at the `.png` in each folder to understand how the bot graph is structured using langGraph

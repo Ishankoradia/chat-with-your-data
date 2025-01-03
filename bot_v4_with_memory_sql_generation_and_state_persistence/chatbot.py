@@ -11,11 +11,11 @@ from io import BytesIO
 from dotenv import load_dotenv
 from typing_extensions import TypedDict, Annotated, Union
 from langgraph.graph import StateGraph, START, END
-from langchain_core.messages import SystemMessage, AnyMessage, HumanMessage
+from langchain_core.messages import SystemMessage, AnyMessage, HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
 import operator
 
-from checkpoint import checkpointer
+from checkpoint import checkpointer, clear_thread
 from sql_generation.main import generate_sql_cached
 
 load_dotenv()
@@ -73,7 +73,7 @@ class ChatWithDatabaseBot:
         user_query = state["messages"][-1].content
         sql_str = generate_sql_cached(user_query)
         return {
-            "messages": [HumanMessage(content=sql_str)],
+            "messages": [AIMessage(content=sql_str)],
             "last_sql_generated": sql_str,
         }
 
@@ -91,12 +91,26 @@ class ChatWithDatabaseBot:
 
 
 if __name__ == "__main__":
+    import argparse
+
+    config = {"configurable": {"thread_id": "1"}}
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--reset",
+        action="store_true",
+        help="Reset the thread and delete all message history",
+    )
+    args = parser.parse_args()
+    if args.reset:
+        clear_thread(config["configurable"]["thread_id"])
+
     bot = ChatWithDatabaseBot()
     bot.generate_graph_png()
-    config = {"configurable": {"thread_id": "1"}}
+
     # load the previous messages in the thread for the latest state
-    for m in bot.graph.get_state(config=config).values["messages"]:
-        print("|> : ", m.content)
+    for m in bot.graph.get_state(config=config).values.get("messages", []):
+        print(f"|> [{m.type}] : ", m.content)
 
     # this will trigger the graph and stream events so you undrestand whats happening
     for event in bot.graph.stream({"messages": []}, config=config):

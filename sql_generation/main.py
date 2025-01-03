@@ -6,7 +6,7 @@ from vanna.pgvector import PG_VectorStore
 
 
 class MyVanna(PG_VectorStore, OpenAI_Chat):
-    def __init__(self, config=None):
+    def __init__(self, config={}):
         PG_VectorStore.__init__(
             self,
             config={
@@ -26,13 +26,13 @@ class MyVanna(PG_VectorStore, OpenAI_Chat):
             config={
                 "api_key": os.environ["OPENAI_API_KEY"],
                 "model": "gpt-4o-mini",
+                **config,
             },
         )
 
 
-@lru_cache(maxsize=1)
-def setup_vanna():
-    vn = MyVanna()
+def setup_vanna(config=None):
+    vn = MyVanna(config=config)
     vn.connect_to_postgres(
         host=os.environ["WAREHOUSE_HOST"],
         dbname=os.environ["WAREHOUSE_DB"],
@@ -48,8 +48,8 @@ def generate_questions_cached():
     return vn.generate_questions()
 
 
-def generate_sql_cached(question: str):
-    vn = setup_vanna()
+def generate_sql_cached(question: str, initial_prompt: str = None):
+    vn = setup_vanna({"initial_prompt": initial_prompt})
     return vn.generate_sql(question=question, allow_llm_to_see_data=True)
 
 
